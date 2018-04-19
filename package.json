@@ -1,0 +1,19 @@
+{
+  "name": "webrtc-chat-app",
+  "version": "1.0.0",
+  "description": "WebRTC peer to peer chat application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mukulmishra18/webrtc-chat-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mukulmishra18/webrtc-chat-app/issues"
+  },
+  "homepage": "https://github.com/mukulmishra18/webrtc-chat-app#readme"
+}
