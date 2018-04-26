@@ -1,3 +1,5 @@
+'use strict';
+
 var sendMessage = $('#sendMessage');
 var ul = $('ul');
 var input = $('input');
@@ -7,9 +9,11 @@ var input = $('input');
 var socket = io.connect();
 
 function appendMessage() {
-  var li = '<li>' + input.val() + '</li>';
+  var text = input.val();
+  var li = '<li>' + text + '</li>';
   input.val('');
   ul.append(li);
+  socket.emit('message', text);
 }
 
 sendMessage.on('click', appendMessage);
