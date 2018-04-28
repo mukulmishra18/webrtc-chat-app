@@ -8,6 +8,20 @@ var input = $('input');
 // this file or we can manually connect to `localhost:8080`
 var socket = io.connect();
 
+// Handle when new user connect to the chat app.
+socket.on('newClient', function(onlineClients) {
+  console.log('newClient', onlineClients);
+  var html = '<div class="sidebar-header"><h3 style="color: #47dd47; margin-left: 10px">Online</h3>';
+
+  for(var client in onlineClients) {
+    html += '<a href="#" style="cursor: pointer">' + onlineClients[client] + '</a>';
+  }
+  html += '</div>';
+
+  $('.sidenav').html('');
+  $('.sidenav').append(html);
+});
+
 function appendMessage() {
   var text = input.val();
   var li = '<li>' + text + '</li>';

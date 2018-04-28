@@ -42,6 +42,10 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
+// Array to keep track of the online users.
+var onlineClients = {};
+var userName;
+
 app.use(express.static('./client/'));
 
 app.get('/', function(req, res) {
@@ -50,10 +54,16 @@ app.get('/', function(req, res) {
 
 app.get('/chat', function(req, res) {
   // req.query = { username: 'man' };
+  userName = req.query.username;
   res.sendFile(path.resolve(__dirname, './client/chat.html'))
 });
 
 io.on('connection', function (socket) {
+  // Broadcast onlineClients array when new peer connects.
+  console.log('Peer connected', socket.id);
+  onlineClients[socket.id] = userName;
+  io.emit('newClient', onlineClients);
+
   socket.on('message', function(message) {
     console.log('Peer says:', message);
     // Use: socket.to('roomName').emit('message', message);
@@ -62,6 +72,9 @@ io.on('connection', function (socket) {
   });
 
   socket.on('disconnect', function(reason) {
+    // Delete the current peer from online peer array and send update.
+    delete onlineClients[socket.id];
+    io.emit('newClient', onlineClients);
     console.log('Peer disconnects', reason);
   });
 });
