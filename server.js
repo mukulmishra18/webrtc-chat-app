@@ -48,6 +48,11 @@ app.get('/', function(req, res) {
   res.sendFile(path.resolve(__dirname, './client/index.html'));
 });
 
+app.get('/chat', function(req, res) {
+  // req.query = { username: 'man' };
+  res.sendFile(path.resolve(__dirname, './client/chat.html'))
+});
+
 io.on('connection', function (socket) {
   socket.on('message', function(message) {
     console.log('Peer says:', message);
