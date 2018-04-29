@@ -42,10 +42,17 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
-// Array to keep track of the online users.
+/** 
+ * Array to keep track of the online users.
+ * `onlineClients = { id: name }` id and name of the online peers.
+ * `onlineSockets = { id: name }` id and socket object of online peers.
+ */
+
 var onlineClients = {};
+var onlineSockets = {};
 var userName;
 
+// Use client directory as static.
 app.use(express.static('./client/'));
 
 app.get('/', function(req, res) {
@@ -60,10 +67,13 @@ app.get('/chat', function(req, res) {
 
 io.on('connection', function (socket) {
   // Broadcast onlineClients array when new peer connects.
+  // Every peer get this message and can update their online table.
   console.log('Peer connected', socket.id);
   onlineClients[socket.id] = userName;
+  onlineSockets[socket.id] = socket;
   io.emit('newClient', onlineClients);
 
+  // `message` event handler for chat.
   socket.on('message', function(message) {
     console.log('Peer says:', message);
     // Use: socket.to('roomName').emit('message', message);
@@ -71,11 +81,34 @@ io.on('connection', function (socket) {
     socket.emit('message', message);
   });
 
+  /**
+   * `connectRequest` event handler.
+   * Handles the event when a peer wants to connect to other peer.
+   * This message is sent to the target peer to get it's permission
+   * to setup message tunnel for chat.
+   *
+   * @params { id } ID of the target peer.
+   */
+  socket.on('connectRequest', function(id) {
+    console.log('Peer with id ' + socket.id + ' wants to connect with ' + id);
+    onlineSockets[id].emit('connectRequest', socket.id, onlineClients[socket.id]);
+  });
+
+  socket.on('connectResponse', function(message) {
+    console.log('Connection response for peer with id ' + socket.id + ' is: ' + message.response);
+    onlineSockets[message.id].emit('connectResponse', message.id);
+  });
+
   socket.on('disconnect', function(reason) {
     // Delete the current peer from online peer array and send update.
     delete onlineClients[socket.id];
+    delete onlineSockets[socket.id];
     io.emit('newClient', onlineClients);
     console.log('Peer disconnects', reason);
+  });
+
+  socket.on('error', function(error) {
+    console.log(error);
   });
 });
 
