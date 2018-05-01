@@ -38,12 +38,32 @@ function sendConnectResponse(element, id) {
  * @params {name} name of the peer wants to connect.
  */ 
 socket.on('connectRequest', function(id, name) {
+  // Remove previously attached `click` event from buttons.
+  // Each time `connectRequest` event fire, it attach `click` event
+  // to the accept/decline button and that will keep growing if we do
+  // not unload it and can create problems.
+  $('.btn').off('click');
   modal.style.display = 'block';
   document.querySelector('#modal-text').textContent = name + ' wants to connect!';
 
   $('.btn').on('click', function() {
     sendConnectResponse(this, id);
   });
+});
+
+
+/**
+ * Connection response from other peer.
+ * @params { id } Id of the other peer.
+ * @params { response } Response for connection request.
+ */
+socket.on('connectResponse', function(id, response) {
+  console.log('Connection resposen from ' + id + ' is ' + response);
+  if (response === 'accept') {
+    window.alert('You can chat with ' + id);
+  } else {
+    window.alert('Peer with id ', id, ' respond with ', response);
+  }
 });
 
 // Handle when new user connect to the chat app.

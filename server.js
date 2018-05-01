@@ -95,8 +95,8 @@ io.on('connection', function (socket) {
   });
 
   socket.on('connectResponse', function(message) {
-    console.log('Connection response for peer with id ' + socket.id + ' is: ' + message.response);
-    onlineSockets[message.id].emit('connectResponse', message.id);
+    console.log('Connection response from peer with id ' + socket.id + ' is: ' + message.response);
+    onlineSockets[message.id].emit('connectResponse', socket.id, message.response);
   });
 
   socket.on('disconnect', function(reason) {
