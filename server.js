@@ -74,11 +74,11 @@ io.on('connection', function (socket) {
   io.emit('newClient', onlineClients);
 
   // `message` event handler for chat.
-  socket.on('message', function(message) {
-    console.log('Peer says:', message);
+  socket.on('message', function(id, message) {
+    console.log('Peer says:', id, JSON.stringify(message));
     // Use: socket.to('roomName').emit('message', message);
     // To emit the message in particulat room.
-    socket.emit('message', message);
+    onlineSockets[id].emit('message', socket.id, message);
   });
 
   /**
@@ -96,7 +96,7 @@ io.on('connection', function (socket) {
 
   socket.on('connectResponse', function(message) {
     console.log('Connection response from peer with id ' + socket.id + ' is: ' + message.response);
-    onlineSockets[message.id].emit('connectResponse', socket.id, message.response);
+    onlineSockets[message.id].emit('connectResponse', socket.id, message.response, onlineClients[socket.id]);
   });
 
   socket.on('disconnect', function(reason) {
@@ -112,6 +112,6 @@ io.on('connection', function (socket) {
   });
 });
 
-server.listen(8080, function() {
-  console.log('App is listening on port', 8080);
+server.listen(8000, function() {
+  console.log('App is listening on port', 8000);
 });
