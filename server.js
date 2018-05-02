@@ -1,8 +1,9 @@
 'use strict';
+
 /**
  * Steps for the server.
  *
- * Whenever a user connects send index file for '/' path.
+ * Whenever a user connects, send index file for '/' path.
  * This page(index) will ask for a username to connect.
  * Send this `username` to the server using socket.io
  * This useranme will be store in the server and shown to other users to connect.
